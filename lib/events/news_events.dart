@@ -23,11 +23,3 @@ class SearchNews extends NewsEvent {
     this.category,
   });
 }
-
-
-abstract class DateEvent {}
-
-class FormatDateEvent extends DateEvent {
-  final String dateString;
-  FormatDateEvent(this.dateString);
-}

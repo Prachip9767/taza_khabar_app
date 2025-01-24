@@ -1,4 +1,4 @@
-import 'package:taza_khabar_app/models/news_model.dart';
+import 'package:taza_khabar_app/models/news_article_model.dart';
 
 class NewsState {}
 
@@ -24,18 +24,4 @@ class NewsError extends NewsState {
   final String message;
 
   NewsError(this.message);
-}
-// State
-abstract class DateState {}
-
-class DateInitial extends DateState {}
-
-class DateFormatted extends DateState {
-  final String formattedDate;
-  DateFormatted(this.formattedDate);
-}
-
-class DateError extends DateState {
-  final String errorMessage;
-  DateError(this.errorMessage);
 }
