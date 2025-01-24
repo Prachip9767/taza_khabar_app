@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 class NetworkException implements Exception {
   final String message;
   NetworkException(this.message);
+
+  @override
+  String toString() => 'NetworkException: $message';
 }
 
 class NetworkService {
@@ -11,7 +16,7 @@ class NetworkService {
   NetworkService() : _dio = Dio() {
     _initializeDio();
   }
-  // https://api.currentsapi.services/v1/latest-news?language=en&apiKey=szkv3Y4XDlOXNR_sMN7_avJQIKo6w3Tm7dy-kDcsPzPehoms
+
   void _initializeDio() {
     _dio.options = BaseOptions(
       baseUrl: 'https://api.currentsapi.services/',
@@ -19,6 +24,7 @@ class NetworkService {
       receiveTimeout: const Duration(seconds: 10),
     );
 
+    // Add interceptors for debugging
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
         print('Request URL: ${options.uri}');
@@ -42,7 +48,20 @@ class NetworkService {
       );
       return response;
     } on DioException catch (e) {
-      throw NetworkException(e.message ?? 'Network Error');
+      String errorMessage = 'Unknown error occurred';
+
+      // Checking DioException based on the available fields
+      if (e.error is SocketException) {
+        errorMessage = 'Network error: No Internet connection';
+      } else if ((e.message??'').contains("timeout")) {
+        errorMessage = 'Connection timed out';
+      } else if (e.response != null) {
+        errorMessage = 'Server responded with status: ${e.response?.statusCode}';
+      } else if (e.error != null) {
+        errorMessage = 'Network error: ${e.error}';
+      }
+
+      throw NetworkException(errorMessage);
     }
   }
 }

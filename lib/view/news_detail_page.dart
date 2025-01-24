@@ -10,95 +10,122 @@ class NewsDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the screen height and width
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+    double imageHeight = screenHeight * 0.35; // 35% of screen height for the image
+
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(16)
-                        ,bottomRight: Radius.circular(16)),
-                    child: CachedNetworkImage(
-                      height: 250,
-                      width: double.maxFinite,
-                      imageUrl: article.urlToImage ?? '',
-                      cacheKey: article.urlToImage ?? '',
-                      errorWidget: (context, url, error) => const SizedBox(),
-                      placeholder: (context, url) => const SizedBox(),
-                      fit: BoxFit.fill,
-                    ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image section (non-scrollable)
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(16),
+                    bottomRight: Radius.circular(16),
                   ),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.pop(context);
-                      FocusScope.of(context).unfocus();
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 16),
-                      child: Icon(Icons.arrow_back,color: Colors.white,),
-                    ),
+                  child: CachedNetworkImage(
+                    height: imageHeight, // Dynamic height for image
+                    width: double.infinity,
+                    imageUrl: article.urlToImage ?? '',
+                    cacheKey: article.urlToImage ?? '',
+                    errorWidget: (context, url, error) => const Icon(Icons.error, color: Colors.red),
+                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                    fit: BoxFit.cover,
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 16),
-                    child: Align(
-                        alignment: Alignment.topRight,
-                        child: Icon(Icons.bookmark,color: Colors.white,)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0,right: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const SizedBox(width: 14,),
-                        Container(width: 4,color: Colors.orange,height: 50,),
-                        const SizedBox(width: 8,),
-                        Expanded(
-                          child: Text(
-                            maxLines: 2,
-                            article.title,
-                            style: Theme.of(context).textTheme.headlineMedium?.
-                            copyWith(fontWeight: FontWeight.w700,height: 1.1,),
-                          ),
-                        ),
-                      ],
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    FocusScope.of(context).unfocus();
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05, // 5% of screen width for padding
+                      vertical: screenHeight * 0.03, // 3% of screen height for vertical padding
                     ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    child: const Icon(Icons.arrow_back, color: Colors.white),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.05, // 5% of screen width for padding
+                    vertical: screenHeight * 0.03, // 3% of screen height for vertical padding
+                  ),
+                  child: const Align(
+                    alignment: Alignment.topRight,
+                    child: Icon(Icons.bookmark, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            // Content section (scrollable)
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.05, // 5% of screen width for padding
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: screenHeight * 0.03), // 3% of screen height
+                      Row(
                         children: [
-                          Text(
-                            '${article.description?.replaceAll('\n', ' ')} '
-                                '${article.description?.replaceAll('\n', ' ')}'
-                                '${article.description?.replaceAll('\n', ' ')}'?? 'No description available',
-                            style: Theme.of(context).textTheme.bodyMedium?.
-                            copyWith(fontWeight: FontWeight.w400,height: 1.2),
+                          Container(
+                            width: screenWidth * 0.01, // 1% of screen width for line
+                            color: Colors.orange,
+                            height: screenHeight * 0.075, // 12% of screen height for line height
                           ),
-                          const SizedBox(height: 14),
-                          // Text(' Current News',
-                          //   style: Theme.of(context).textTheme.bodySmall?.
-                          // copyWith(fontWeight: FontWeight.w600),),
-                          Text( DateFormat("d MMM y").format(article.publishedAt),
-                            style: Theme.of(context).textTheme.bodySmall?.
-                            copyWith(fontWeight: FontWeight.w600,color: Colors.black54,
-                                fontSize: 12),),
+                          SizedBox(width: screenWidth * 0.02), // 2% of screen width
+                          Expanded(
+                            child: Text(
+                              article.title,
+                              maxLines: 2,
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                height: 1.1,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                  ],
+                      SizedBox(height: screenHeight * 0.04), // 4% of screen height
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                        child: Text(
+                        '${article.description?.replaceAll('\n', ' ')}'
+                            '${article.description?.replaceAll('\n', ' ')}' ??
+                              'No description available',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w400,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.03), // 3% of screen height
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                        child: Text(
+                          DateFormat("d MMM y").format(article.publishedAt),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black54,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 50,)
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

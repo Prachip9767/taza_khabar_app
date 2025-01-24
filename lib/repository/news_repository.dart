@@ -1,11 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:taza_khabar_app/models/news_article_model.dart';
 import 'package:taza_khabar_app/network/network_service.dart';
-
-import '../models/news_model.dart';
+import 'package:taza_khabar_app/models/news_model.dart';
 
 class NewsRepository {
   final NetworkService _networkService;
-  static const String _apiKey = 'szkv3Y4XDlOXNR_sMN7_avJQIKo6w3Tm7dy-kDcsPzPehoms';
+  static const String _apiKey = 'szkv3Y4XDlOXNR_sMN7_avJQIKo6w3Tm7dy-kDcsPzPehoms'; // Move to a more secure storage method later
 
   NewsRepository(this._networkService);
 
@@ -26,17 +26,25 @@ class NewsRepository {
         },
       );
 
-      if (response.statusCode == 200) {
+      // Check if the response is successful
+      if (response.statusCode == 200 && response.data != null) {
         final newsResponse = NewsResponse.fromJson(response.data);
+
+        // Ensure articles are returned
+        if (newsResponse.articles.isEmpty) {
+          throw Exception('No news articles found.');
+        }
+
         return newsResponse.articles;
       } else {
-        throw Exception('Failed to load news: ${response.statusCode}');
+        throw Exception('Failed to load news. Status code: ${response.statusCode}');
       }
     } catch (e) {
+      // Add more detailed error handling
+      if (e is DioException) {
+        throw Exception('Network Error: ${e.message}');
+      }
       throw Exception('Error fetching news: $e');
     }
   }
 }
-
-
-
