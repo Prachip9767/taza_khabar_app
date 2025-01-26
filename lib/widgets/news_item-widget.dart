@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taza_khabar_app/models/news_article_model.dart';
+import 'package:taza_khabar_app/utils/app_color.dart';
 import 'package:taza_khabar_app/utils/png_images.dart';
 
 class NewsArticleItem extends StatelessWidget {
@@ -96,9 +97,9 @@ class NewsArticleItem extends StatelessWidget {
 
   Widget _buildDate() {
     return Text(
-      '${DateFormat("d MMM y").format(article.publishedAt)}',
+      DateFormat("d MMM y").format(article.publishedAt),
       style: const TextStyle(
-        color: Colors.white,
+        color:  AppColors.white,
         fontSize: 14,
         fontWeight: FontWeight.w400,
       ),
@@ -110,7 +111,7 @@ class NewsArticleItem extends StatelessWidget {
       article.title,
       maxLines: 2,
       style: const TextStyle(
-        color: Colors.white,
+        color:  AppColors.white,
         fontSize: 18,
         height: 1.1,
         fontWeight: FontWeight.w500,
@@ -124,7 +125,7 @@ class NewsArticleItem extends StatelessWidget {
       article.description!.replaceAll('\n', ' '),
       maxLines: 2,
       style: const TextStyle(
-        color: Colors.white,
+        color: AppColors.white,
         height: 1.1,
         fontSize: 12,
       ),

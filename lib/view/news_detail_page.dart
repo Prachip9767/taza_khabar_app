@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taza_khabar_app/models/news_article_model.dart';
+import 'package:taza_khabar_app/utils/app_color.dart';
 import 'package:taza_khabar_app/utils/png_images.dart';
 
 class NewsDetailPage extends StatelessWidget {
@@ -11,7 +12,6 @@ class NewsDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the screen height and width
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     double imageHeight = screenHeight * 0.35;
@@ -50,7 +50,7 @@ class NewsDetailPage extends StatelessWidget {
                     horizontal: screenWidth * 0.05,
                     vertical: screenHeight * 0.05,
                   ),
-                  child: const Icon(Icons.arrow_back, color: Colors.white),
+                  child: const Icon(Icons.arrow_back, color:AppColors.white),
                 ),
               ),
               Padding(
@@ -60,7 +60,7 @@ class NewsDetailPage extends StatelessWidget {
                 ),
                 child: const Align(
                   alignment: Alignment.topRight,
-                  child: Icon(Icons.bookmark, color: Colors.white),
+                  child: Icon(Icons.bookmark, color: AppColors.white),
                 ),
               ),
             ],
@@ -80,7 +80,7 @@ class NewsDetailPage extends StatelessWidget {
                       children: [
                         Container(
                           width: screenWidth * 0.01,
-                          color: Colors.orange,
+                          color: AppColors.accent,
                           height: screenHeight * 0.075,
                         ),
                         SizedBox(width: screenWidth * 0.02),
@@ -116,12 +116,12 @@ class NewsDetailPage extends StatelessWidget {
                         DateFormat("d MMM y").format(article.publishedAt),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.black54,
+                          color: AppColors.black54,
                           fontSize: 12,
                         ),
                       ),
                     ),
-                    SizedBox(height: 50,)
+                    const SizedBox(height: 50,)
                   ],
                 ),
               ),
