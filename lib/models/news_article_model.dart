@@ -1,3 +1,4 @@
+/// Represents a news article with comprehensive details
 class NewsArticle {
   final String source;
   final String? author;
@@ -9,7 +10,8 @@ class NewsArticle {
   final String? content;
   final List<String> category;
 
-  NewsArticle( {
+  /// Constructor for creating a NewsArticle instance
+  NewsArticle({
     required this.category,
     required this.source,
     this.author,
@@ -21,6 +23,8 @@ class NewsArticle {
     this.content,
   });
 
+  /// Factory method to create a NewsArticle from JSON data
+  /// Handles potential null or missing values with default fallbacks
   factory NewsArticle.fromJson(Map<String, dynamic> json) {
     return NewsArticle(
       category: (json['category'] as List<dynamic>?)

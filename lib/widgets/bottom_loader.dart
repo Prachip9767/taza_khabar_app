@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// Reusable bottom loader widget for pagination
+/// Displays a centered circular progress indicator
 class BottomLoader extends StatelessWidget {
   const BottomLoader({super.key});
 
@@ -13,4 +15,3 @@ class BottomLoader extends StatelessWidget {
     );
   }
 }
-

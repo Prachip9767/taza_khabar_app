@@ -28,7 +28,7 @@ class NewsArticleItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
-          height: cardHeight,  // Use the dynamic height
+          height: cardHeight,
           child: Stack(
             children: [
               _buildBackgroundImage(),
@@ -41,6 +41,7 @@ class NewsArticleItem extends StatelessWidget {
     );
   }
 
+  // Helper methods for building different parts of the card
   Widget _buildBackgroundImage() {
     return ClipRRect(
       borderRadius: const BorderRadius.all(Radius.circular(8)),

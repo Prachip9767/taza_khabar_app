@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 
+/// Custom exception for network-related errors
 class NetworkException implements Exception {
   final String message;
   NetworkException(this.message);
@@ -10,13 +11,16 @@ class NetworkException implements Exception {
   String toString() => 'NetworkException: $message';
 }
 
+/// Service for handling network requests using Dio
 class NetworkService {
   final Dio _dio;
 
+  /// Constructor initializes Dio with base configuration
   NetworkService() : _dio = Dio() {
     _initializeDio();
   }
 
+  /// Configures Dio with base URL, timeouts, and interceptors
   void _initializeDio() {
     _dio.options = BaseOptions(
       baseUrl: 'https://api.currentsapi.services/',
@@ -36,6 +40,8 @@ class NetworkService {
     ));
   }
 
+  /// Performs GET request with error handling
+  /// Throws [NetworkException] with detailed error message
   Future<Response> get({
     required String endpoint,
     Map<String, dynamic>? queryParameters,

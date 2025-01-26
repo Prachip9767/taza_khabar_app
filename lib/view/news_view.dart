@@ -10,6 +10,7 @@ import 'package:taza_khabar_app/view/news_detail_page.dart';
 import 'package:taza_khabar_app/widgets/bottom_loader.dart';
 import 'package:taza_khabar_app/widgets/news_item-widget.dart';
 
+/// Main news listing page with search and navigation functionality
 class NewsPage extends StatefulWidget {
   NewsPage({super.key});
 
@@ -18,12 +19,14 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
+  /// Scaffold and focus management keys
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    // Ensure text field is unfocused after initial render
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_focusNode.hasFocus) {
         _focusNode.unfocus();
@@ -37,6 +40,7 @@ class _NewsPageState extends State<NewsPage> {
     super.dispose();
   }
 
+  /// Unfocus the text field
   void _unfocusTextField() {
     FocusScope.of(context).unfocus();
   }
@@ -44,6 +48,7 @@ class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
+      // Handle back navigation with focus management
       onWillPop: () async {
         if (_focusNode.hasFocus) {
           _unfocusTextField();
@@ -52,6 +57,7 @@ class _NewsPageState extends State<NewsPage> {
         return true;
       },
       child: GestureDetector(
+        // Dismiss keyboard on tap outside
         onTap: () => _unfocusTextField(),
         child: Scaffold(
           key: _scaffoldKey,
@@ -61,21 +67,24 @@ class _NewsPageState extends State<NewsPage> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Search bar and recent searches
               _buildSearchBar(context),
               if (context.read<NewsBloc>().recentSearches.isNotEmpty)
                 const Padding(
                   padding: EdgeInsets.only(left: 12.0),
                   child: Text(AppStrings.recentSearches,
                     style: TextStyle(
-                      color: AppColors.black,
-                      height: 1.1,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600
+                        color: AppColors.black,
+                        height: 1.1,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600
                     ),
                   ),
                 ),
               if (context.read<NewsBloc>().recentSearches.isNotEmpty)
                 _buildRecentSearchChips(context),
+
+              // News list with pagination and state management
               Expanded(child: _buildNewsList(context)),
             ],
           ),

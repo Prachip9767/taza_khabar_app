@@ -10,6 +10,7 @@ void main() {
   runApp(const MyApp());
 }
 
+/// Main application entry point with dependency and state management
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -17,9 +18,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (context) => NetworkService(),
-        ),
+        // Setup network and repository services
+        RepositoryProvider(create: (context) => NetworkService()),
         RepositoryProvider(
           create: (context) => NewsRepository(
             context.read<NetworkService>(),
@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
+          // Initialize NewsBloc with initial fetch event
           BlocProvider(
             create: (context) => NewsBloc(
               context.read<NewsRepository>(),
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// App configuration with theme and initial route
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
 

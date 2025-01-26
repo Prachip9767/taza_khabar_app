@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// Centralized color palette for app theming
+
 class AppColors {
   static const Color primary = Colors.blue;
   static const Color accent = Colors.orange;

@@ -5,13 +5,16 @@ import 'package:taza_khabar_app/models/news_article_model.dart';
 import 'package:taza_khabar_app/utils/app_color.dart';
 import 'package:taza_khabar_app/utils/png_images.dart';
 
+/// Detailed page displaying a single news article
 class NewsDetailPage extends StatelessWidget {
+  /// News article to be displayed
   final NewsArticle article;
 
   const NewsDetailPage({super.key, required this.article});
 
   @override
   Widget build(BuildContext context) {
+    // Calculate screen dimensions for responsive design
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     double imageHeight = screenHeight * 0.35;
@@ -20,31 +23,33 @@ class NewsDetailPage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Article image with back and bookmark icons
           Stack(
             children: [
+              // Cached network image with error and placeholder handling
               ClipRRect(
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(16),
                   bottomRight: Radius.circular(16),
                 ),
                 child: CachedNetworkImage(
-                  height: imageHeight, // Dynamic height for image
+                  height: imageHeight,
                   width: double.infinity,
                   imageUrl: article.urlToImage ?? '',
                   cacheKey: article.urlToImage ?? '',
                   errorWidget: (context, url, error) =>
                       Image.asset(AssetsAnnotationPNG().defaultImage,
-                    fit: BoxFit.cover, ),
+                        fit: BoxFit.cover, ),
                   placeholder: (context, url) =>
                       Image.asset(AssetsAnnotationPNG().defaultImage,
-                    fit: BoxFit.cover,  ),
+                        fit: BoxFit.cover,  ),
                   fit: BoxFit.cover,
                 ),
               ),
+              // Back button with navigation and keyboard dismissal
               GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
-                  // Close the keyboard when popping the page
                   FocusScope.of(context).unfocus();
                 },
                 child: Padding(
@@ -55,6 +60,7 @@ class NewsDetailPage extends StatelessWidget {
                   child: const Icon(Icons.arrow_back, color:AppColors.white),
                 ),
               ),
+              // Bookmark icon
               Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: screenWidth * 0.05,
@@ -67,7 +73,7 @@ class NewsDetailPage extends StatelessWidget {
               ),
             ],
           ),
-          // Content section (scrollable)
+          // Scrollable article content
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -78,6 +84,7 @@ class NewsDetailPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: screenHeight * 0.03),
+                    // Article title with accent bar
                     Row(
                       children: [
                         Container(
@@ -99,6 +106,7 @@ class NewsDetailPage extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.04),
+                    // Article description
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                       child: Text(
@@ -111,6 +119,7 @@ class NewsDetailPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.03),
+                    // Publication date
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                       child: Text(
