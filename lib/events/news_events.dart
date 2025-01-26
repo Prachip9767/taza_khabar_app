@@ -10,6 +10,15 @@ class FetchNews extends NewsEvent {
 class LoadMoreNews extends NewsEvent {}
 
 
+class AddRecentSearch extends NewsEvent {
+  final String query;
+  AddRecentSearch({required this.query});
+}
+
+class RemoveRecentSearch extends NewsEvent {
+  final String query;
+  RemoveRecentSearch({required this.query});
+}
 class SearchNews extends NewsEvent {
   final String? query;
   final String? language;

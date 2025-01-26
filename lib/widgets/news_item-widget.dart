@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taza_khabar_app/models/news_article_model.dart';
+import 'package:taza_khabar_app/utils/png_images.dart';
 
 class NewsArticleItem extends StatelessWidget {
   final NewsArticle article;
@@ -45,8 +46,10 @@ class NewsArticleItem extends StatelessWidget {
       child: CachedNetworkImage(
         imageUrl: article.urlToImage ?? '',
         cacheKey: article.urlToImage ?? '',
-        errorWidget: (context, url, error) => const SizedBox(),
-        placeholder: (context, url) => const SizedBox(),
+        errorWidget: (context, url, error) =>  Image.asset(AssetsAnnotationPNG().defaultImage,
+          fit: BoxFit.cover, ),
+        placeholder: (context, url) => Image.asset(AssetsAnnotationPNG().defaultImage,
+          fit: BoxFit.cover,),
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,

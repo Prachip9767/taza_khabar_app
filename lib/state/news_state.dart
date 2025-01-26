@@ -9,13 +9,16 @@ class NewsLoading extends NewsState {}
 class NewsLoaded extends NewsState {
   final List<NewsArticle> articles;
   final bool hasReachedMax;
+  final List<String> recentSearches;
 
-  NewsLoaded({required this.articles, required this.hasReachedMax});
+  NewsLoaded({required this.articles, required this.hasReachedMax,
+    required this.recentSearches,});
 
   NewsLoaded copyWith({List<NewsArticle>? articles, bool? hasReachedMax}) {
     return NewsLoaded(
       articles: articles ?? this.articles,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+      recentSearches: this.recentSearches,
     );
   }
 }
