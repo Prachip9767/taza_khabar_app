@@ -8,7 +8,7 @@ Taza Khabar is a cross-platform news application built with Flutter, providing u
 
 # Click On Demo✨
   <code>
-    <a href="https://drive.google.com/file/d/1A1YiB8ooMM06u0W61F6jzN4-NzLDwzVw/view?usp=sharing" title="Playstore Profile"><img height="140" width="140" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgwJcz642pA7mLR5u44OirKSJjfxOoOqWbpNx7vgDP0NI4snSp68daLp-JccwzoGUIARw&usqp=CAU"></a></code>
+    <a href="https://drive.google.com/file/d/1A1YiB8ooMM06u0W61F6jzN4-NzLDwzVw/view?usp=sharing(https://drive.google.com/file/d/1Q0blyvS9Dujhe27HNz91imRpyMIn7hrg/view?usp=drive_link)" title="Playstore Profile"><img height="140" width="140" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgwJcz642pA7mLR5u44OirKSJjfxOoOqWbpNx7vgDP0NI4snSp68daLp-JccwzoGUIARw&usqp=CAU"></a></code>
 
 ## Features
 
