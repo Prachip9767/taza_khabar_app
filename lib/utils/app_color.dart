@@ -8,5 +8,5 @@ class AppColors {
   static const Color black = Colors.black;
   static const Color black54 = Colors.black54;
   static const Color black87 = Colors.black87;
-  static const Color purple = Color(0xFFC3B1E1); // Define your color
+  static const Color purple = Color(0xFFC3B1E1);
 }

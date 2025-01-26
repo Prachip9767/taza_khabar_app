@@ -1,15 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taza_khabar_app/bloc/news_bloc.dart';
 import 'package:taza_khabar_app/events/news_events.dart';
 import 'package:taza_khabar_app/state/news_state.dart';
 import 'package:taza_khabar_app/utils/app_color.dart';
+import 'package:taza_khabar_app/utils/app_string.dart';
 import 'package:taza_khabar_app/view/news_detail_page.dart';
 import 'package:taza_khabar_app/widgets/bottom_loader.dart';
 import 'package:taza_khabar_app/widgets/news_item-widget.dart';
 
-/// The NewsPage widget is the main screen of the app where users can view
-/// news articles and search for specific topics.
 class NewsPage extends StatefulWidget {
   NewsPage({super.key});
 
@@ -19,12 +19,11 @@ class NewsPage extends StatefulWidget {
 
 class _NewsPageState extends State<NewsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final FocusNode _focusNode = FocusNode(); // FocusNode to manage TextField focus
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    // Unfocus the text field when coming back to the page
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_focusNode.hasFocus) {
         _focusNode.unfocus();
@@ -34,11 +33,10 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   void dispose() {
-    _focusNode.dispose(); // Dispose of the FocusNode when the widget is destroyed
+    _focusNode.dispose();
     super.dispose();
   }
 
-  /// Helper function to unfocus the text field and hide the keyboard.
   void _unfocusTextField() {
     FocusScope.of(context).unfocus();
   }
@@ -48,13 +46,13 @@ class _NewsPageState extends State<NewsPage> {
     return WillPopScope(
       onWillPop: () async {
         if (_focusNode.hasFocus) {
-          _unfocusTextField(); // Close the keyboard if the TextField is focused
-          return false; // Prevent the default back action
+          _unfocusTextField();
+          return false;
         }
-        return true; // Allow the default back action if the keyboard is not visible
+        return true;
       },
       child: GestureDetector(
-        onTap: () => _unfocusTextField(), // Hide the keyboard on tapping outside
+        onTap: () => _unfocusTextField(),
         child: Scaffold(
           key: _scaffoldKey,
           resizeToAvoidBottomInset: false,
@@ -67,7 +65,7 @@ class _NewsPageState extends State<NewsPage> {
               if (context.read<NewsBloc>().recentSearches.isNotEmpty)
                 const Padding(
                   padding: EdgeInsets.only(left: 12.0),
-                  child: Text('Recent Searches',
+                  child: Text(AppStrings.recentSearches,
                     style: TextStyle(
                       color: AppColors.black,
                       height: 1.1,
@@ -86,11 +84,10 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
-  /// Builds the AppBar widget with a title and a menu button to open the drawer.
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       title: const Text(
-        'Taza Khabar',
+        AppStrings.appName,
         style: TextStyle(fontWeight: FontWeight.w700, fontSize: 28, height: 2),
       ),
       leading: IconButton(
@@ -104,7 +101,6 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
-  /// Builds the Drawer widget that contains a list of menu items for navigation.
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: ListView(
@@ -119,35 +115,33 @@ class _NewsPageState extends State<NewsPage> {
               child: const Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
-                  'Taza Khabar',
+                  AppStrings.appName,
                   style: TextStyle(color: AppColors.black87, fontSize: 24),
                 ),
               ),
             ),
           ),
-          _buildDrawerItem(context, Icons.home, 'Home'),
-          _buildDrawerItem(context, Icons.business, 'Business'),
-          _buildDrawerItem(context, Icons.trending_up, 'Trending'),
-          _buildDrawerItem(context, Icons.sports_cricket, 'Sports'),
-          _buildDrawerItem(context, Icons.settings, 'Settings'),
+          _buildDrawerItem(context, Icons.home,AppStrings.home),
+          _buildDrawerItem(context, Icons.business,AppStrings.business),
+          _buildDrawerItem(context, Icons.trending_up,AppStrings.trending),
+          _buildDrawerItem(context, Icons.sports_cricket,AppStrings.sports),
+          _buildDrawerItem(context, Icons.settings, AppStrings.settings),
         ],
       ),
     );
   }
 
-  /// Builds a list item for the Drawer with an icon and title.
   Widget _buildDrawerItem(BuildContext context, IconData icon, String title) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
       onTap: () {
         Navigator.pop(context);
-        _unfocusTextField(); // Remove focus from the search field
+        _unfocusTextField();
       },
     );
   }
 
-  /// Builds the search bar where users can input search queries.
   Widget _buildSearchBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -155,10 +149,10 @@ class _NewsPageState extends State<NewsPage> {
         children: [
           Expanded(
             child: TextField(
-              focusNode: _focusNode, // Attach the FocusNode to the TextField
+              focusNode: _focusNode,
               controller: context.read<NewsBloc>().searchController,
               decoration: const InputDecoration(
-                hintText: 'Search by title or category...',
+                hintText: AppStrings.searchHint,
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
@@ -170,7 +164,6 @@ class _NewsPageState extends State<NewsPage> {
                 _handleSearch(context, value.trim());
               },
               onTap: () {
-                // Only open keyboard when the user taps on the search TextField
                 _focusNode.requestFocus();
               },
             ),
@@ -182,7 +175,6 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
-  /// Builds the search button inside the search bar.
   Widget _buildSearchButton(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -199,7 +191,6 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
-  /// Handles the search logic when a query is submitted or changed.
   void _handleSearch(BuildContext context, String query) {
     if (query.isNotEmpty) {
       if (!context.read<NewsBloc>().recentSearches.contains(query)) {
@@ -209,11 +200,10 @@ class _NewsPageState extends State<NewsPage> {
         }
       }
       context.read<NewsBloc>().add(SearchNews(query: query));
-      _unfocusTextField(); // Hide the keyboard after search
+      _unfocusTextField();
     }
   }
 
-  /// Builds the list of recent search chips for quick access.
   Widget _buildRecentSearchChips(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -224,7 +214,6 @@ class _NewsPageState extends State<NewsPage> {
           children: context.read<NewsBloc>().recentSearches.map((query) {
             return GestureDetector(
               onTap: () {
-                // Perform the search with the selected query
                 context.read<NewsBloc>().searchController.text = query;
                 _handleSearch(context, query);
               },
@@ -243,7 +232,6 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
-  /// Builds the list of news articles to be displayed in the body of the screen.
   Widget _buildNewsList(BuildContext context) {
     return BlocBuilder<NewsBloc, NewsState>(
       builder: (context, state) {
@@ -251,11 +239,22 @@ class _NewsPageState extends State<NewsPage> {
           return const Center(child: CircularProgressIndicator());
         }
         if (state is NewsError) {
-          return Center(child: Text(state.message));
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(state.message),
+                TextButton(
+                  onPressed: state.onRetry,
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
         }
         if (state is NewsLoaded) {
           if (state.articles.isEmpty) {
-            return const Center(child: Text('No news found.'));
+            return const Center(child: Text(AppStrings.noNewsFound));
           }
           return ListView.builder(
             controller: context.read<NewsBloc>().scrollController,
@@ -271,7 +270,7 @@ class _NewsPageState extends State<NewsPage> {
                 article: article,
                 onTap: () {
                   _focusNode.unfocus();
-                  _unfocusTextField(); // Close the keyboard when tapping on an article
+                  _unfocusTextField();
                   Navigator.push(
                     context,
                     MaterialPageRoute(

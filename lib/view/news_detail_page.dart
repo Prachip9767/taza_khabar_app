@@ -32,9 +32,11 @@ class NewsDetailPage extends StatelessWidget {
                   width: double.infinity,
                   imageUrl: article.urlToImage ?? '',
                   cacheKey: article.urlToImage ?? '',
-                  errorWidget: (context, url, error) =>  Image.asset(AssetsAnnotationPNG().defaultImage,
+                  errorWidget: (context, url, error) =>
+                      Image.asset(AssetsAnnotationPNG().defaultImage,
                     fit: BoxFit.cover, ),
-                  placeholder: (context, url) => Image.asset(AssetsAnnotationPNG().defaultImage,
+                  placeholder: (context, url) =>
+                      Image.asset(AssetsAnnotationPNG().defaultImage,
                     fit: BoxFit.cover,  ),
                   fit: BoxFit.cover,
                 ),
@@ -101,8 +103,7 @@ class NewsDetailPage extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                       child: Text(
                         '${article.description?.replaceAll('\n', ' ')}'
-                            '${article.description?.replaceAll('\n', ' ')}' ??
-                            'No description available',
+                            '${article.description?.replaceAll('\n', ' ')}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w400,
                           height: 1.5,

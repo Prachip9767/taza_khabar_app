@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:taza_khabar_app/models/news_article_model.dart';
 
 class NewsState {}
@@ -25,6 +26,8 @@ class NewsLoaded extends NewsState {
 
 class NewsError extends NewsState {
   final String message;
+  final VoidCallback onRetry;
 
-  NewsError(this.message);
+  NewsError({required this.message, required this.onRetry});
 }
+

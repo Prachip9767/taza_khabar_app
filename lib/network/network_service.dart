@@ -24,7 +24,6 @@ class NetworkService {
       receiveTimeout: const Duration(seconds: 10),
     );
 
-    // Add interceptors for debugging
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
         print('Request URL: ${options.uri}');
@@ -50,7 +49,6 @@ class NetworkService {
     } on DioException catch (e) {
       String errorMessage = 'Unknown error occurred';
 
-      // Checking DioException based on the available fields
       if (e.error is SocketException) {
         errorMessage = 'Network error: No Internet connection';
       } else if ((e.message??'').contains("timeout")) {

@@ -15,8 +15,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // The MultiRepositoryProvider and MultiBlocProvider will provide the required
-    // dependencies and BLoC to the widget tree.
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
@@ -24,7 +22,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) => NewsRepository(
-            context.read<NetworkService>(),  // Properly access NetworkService
+            context.read<NetworkService>(),
           ),
         ),
       ],
@@ -32,7 +30,7 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => NewsBloc(
-              context.read<NewsRepository>(),  // Dependency Injection
+              context.read<NewsRepository>(),
             )..add(FetchNews()),
           ),
         ],

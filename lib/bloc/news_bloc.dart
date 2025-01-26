@@ -5,7 +5,6 @@ import 'package:taza_khabar_app/events/news_events.dart';
 import 'package:taza_khabar_app/models/news_article_model.dart';
 import 'package:taza_khabar_app/repository/news_repository.dart';
 import 'package:taza_khabar_app/state/news_state.dart';
-// BLoC
 import 'dart:async';
 
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
@@ -15,15 +14,12 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   final List<String> recentSearches = [];
 
 
-  // Keep the list of all articles and filtered articles
   List<NewsArticle> _allArticles = [];
   List<NewsArticle> _filteredArticles = [];
 
-  // Pagination control
   int _currentPage = 1;
   static const int _pageSize = 20;
 
-  // Search query tracking
   String _currentSearchQuery = '';
 
   NewsBloc(this._repository) : super(NewsInitial()) {
@@ -32,11 +28,9 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<SearchNews>(_onSearchNews);
     on<AddRecentSearch>(_onAddRecentSearch);
     on<RemoveRecentSearch>(_onRemoveRecentSearch);
-    // Scroll listener for loading more news when scrolled near the bottom
     scrollController.addListener(_onScroll);
   }
 
-  // Fetch the initial set of news articles
   Future<void> _onFetchNews(FetchNews event, Emitter<NewsState> emit) async {
     emit(NewsLoading());
     try {
@@ -44,20 +38,24 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       _allArticles = await _repository.fetchNewsByPage(
         page: _currentPage,
         pageSize: _pageSize,
-        query: 'en', // Always fetch in English
+        query: 'en',
       );
-      _filteredArticles = List.from(_allArticles);  // Initially show all articles
+      _filteredArticles = List.from(_allArticles);
       emit(NewsLoaded(
         recentSearches: recentSearches,
         articles: _filteredArticles,
         hasReachedMax: _filteredArticles.length < _pageSize,
       ));
     } catch (e) {
-      emit(NewsError(e.toString()));
+      emit(NewsError(
+        message: 'Failed to load news. Please try again.',
+        onRetry: () {
+          add(FetchNews());
+        },
+      ));
     }
   }
 
-  // Handle loading more news when the user scrolls to the bottom
   Future<void> _onLoadMoreNews(LoadMoreNews event, Emitter<NewsState> emit) async {
     if (state is! NewsLoaded) return;
 
@@ -75,7 +73,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       if (nextPage.isEmpty) {
         emit(currentState.copyWith(hasReachedMax: true));
       } else {
-        _allArticles.addAll(nextPage);  // Append new articles to the existing list
+        _allArticles.addAll(nextPage);
         _filteredArticles = _applySearchFilter(_allArticles);
         emit(NewsLoaded(
           articles: _filteredArticles,
@@ -84,14 +82,18 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         ));
       }
     } catch (e) {
-      emit(NewsError(e.toString()));
+      emit(NewsError(
+        message: 'Failed to load news. Please try again.',
+        onRetry: () {
+          add(FetchNews());
+        },
+      ));
     }
   }
 
   Future<void> _onSearchNews(SearchNews event, Emitter<NewsState> emit) async {
     final query = event.query?.trim() ?? '';
 
-    // If the query is empty, reset to show all data
     if (query.isEmpty) {
       _currentSearchQuery = '';
       _filteredArticles = List.from(_allArticles);
@@ -103,7 +105,6 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       return;
     }
 
-    // Avoid unnecessary reload if the query hasn't changed
     if (_currentSearchQuery == query) return;
 
     _currentSearchQuery = query;
@@ -117,12 +118,15 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         hasReachedMax: _filteredArticles.length < _pageSize,
       ));
     } catch (e) {
-      emit(NewsError(e.toString()));
+      emit(NewsError(
+        message: 'Failed to load news. Please try again.',
+        onRetry: () {
+          add(FetchNews());
+        },
+      ));
     }
   }
 
-
-  // Apply search filters to the articles
   List<NewsArticle> _applySearchFilter(List<NewsArticle> articles) {
     final searchQuery = _currentSearchQuery.toLowerCase();
     return articles.where((article) {
@@ -133,7 +137,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       return lowerCaseTitle.contains(searchQuery) || categoryMatch;
     }).toList();
   }
-  // Handle adding recent search
+
   void _onAddRecentSearch(AddRecentSearch event, Emitter<NewsState> emit) {
     if (!recentSearches.contains(event.query)) {
       recentSearches.insert(0, event.query);
@@ -144,21 +148,19 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     emit(NewsLoaded(
       articles: _filteredArticles,
       hasReachedMax: _filteredArticles.length < _pageSize,
-      recentSearches: recentSearches, // Passing recent searches to the state
+      recentSearches: recentSearches,
     ));
   }
 
-  // Handle removing recent search
   void _onRemoveRecentSearch(RemoveRecentSearch event, Emitter<NewsState> emit) {
     recentSearches.remove(event.query);
     emit(NewsLoaded(
       articles: _filteredArticles,
       hasReachedMax: _filteredArticles.length < _pageSize,
-      recentSearches: recentSearches, // Passing updated recent searches to the state
+      recentSearches: recentSearches,
     ));
   }
 
-  // Scroll listener for fetching more data when nearing the bottom
   void _onScroll() {
     if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 100) {
       add(LoadMoreNews());
