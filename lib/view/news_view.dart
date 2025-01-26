@@ -23,10 +23,15 @@ class _NewsPageState extends State<NewsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FocusNode _focusNode = FocusNode();
 
+  // Add a flag to show/hide the Scroll to Top button
+  bool _isScrollToTopButtonVisible = false;
+
   @override
   void initState() {
     super.initState();
-    // Ensure text field is unfocused after initial render
+    // Listen to the scroll controller to show/hide the button
+    context.read<NewsBloc>().scrollController.addListener(_scrollListener);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_focusNode.hasFocus) {
         _focusNode.unfocus();
@@ -36,19 +41,39 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   void dispose() {
+    context.read<NewsBloc>().scrollController.removeListener(_scrollListener);
     _focusNode.dispose();
     super.dispose();
   }
 
+  // Listen to the scroll position and update the visibility of the button
+  void _scrollListener() {
+    final scrollPosition = context.read<NewsBloc>().scrollController.position.pixels;
+    if (scrollPosition > 300 && !_isScrollToTopButtonVisible) {
+      setState(() {
+        _isScrollToTopButtonVisible = true;
+      });
+    } else if (scrollPosition <= 300 && _isScrollToTopButtonVisible) {
+      setState(() {
+        _isScrollToTopButtonVisible = false;
+      });
+    }
+  }
   /// Unfocus the text field
   void _unfocusTextField() {
-    FocusScope.of(context).unfocus();
+    FocusScope.of(context).unfocus();}
+  // Scroll to the top of the list when the button is pressed
+  void _scrollToTop() {
+    context.read<NewsBloc>().scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      // Handle back navigation with focus management
       onWillPop: () async {
         if (_focusNode.hasFocus) {
           _unfocusTextField();
@@ -57,8 +82,10 @@ class _NewsPageState extends State<NewsPage> {
         return true;
       },
       child: GestureDetector(
-        // Dismiss keyboard on tap outside
-        onTap: () => _unfocusTextField(),
+        onTap: () {
+          _unfocusTextField();
+          _focusNode.unfocus();
+        },
         child: Scaffold(
           key: _scaffoldKey,
           resizeToAvoidBottomInset: false,
@@ -67,32 +94,30 @@ class _NewsPageState extends State<NewsPage> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Search bar and recent searches
               _buildSearchBar(context),
               if (context.read<NewsBloc>().recentSearches.isNotEmpty)
                 const Padding(
                   padding: EdgeInsets.only(left: 12.0),
                   child: Text(AppStrings.recentSearches,
-                    style: TextStyle(
-                        color: AppColors.black,
-                        height: 1.1,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                 ),
               if (context.read<NewsBloc>().recentSearches.isNotEmpty)
                 _buildRecentSearchChips(context),
-
-              // News list with pagination and state management
               Expanded(child: _buildNewsList(context)),
             ],
           ),
+          floatingActionButton: _isScrollToTopButtonVisible
+              ? FloatingActionButton(
+            onPressed: _scrollToTop,
+            backgroundColor: AppColors.purple,
+            child: const Icon(Icons.arrow_upward),
+          )
+              : null,
         ),
       ),
     );
   }
-
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       title: const Text(
