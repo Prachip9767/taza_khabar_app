@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taza_khabar_app/bloc/news_bloc.dart';
@@ -23,99 +22,46 @@ class _NewsPageState extends State<NewsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FocusNode _focusNode = FocusNode();
 
-  // Add a flag to show/hide the Scroll to Top button
-  bool _isScrollToTopButtonVisible = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Listen to the scroll controller to show/hide the button
-    context.read<NewsBloc>().scrollController.addListener(_scrollListener);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_focusNode.hasFocus) {
-        _focusNode.unfocus();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    context.read<NewsBloc>().scrollController.removeListener(_scrollListener);
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  // Listen to the scroll position and update the visibility of the button
-  void _scrollListener() {
-    final scrollPosition = context.read<NewsBloc>().scrollController.position.pixels;
-    if (scrollPosition > 300 && !_isScrollToTopButtonVisible) {
-      setState(() {
-        _isScrollToTopButtonVisible = true;
-      });
-    } else if (scrollPosition <= 300 && _isScrollToTopButtonVisible) {
-      setState(() {
-        _isScrollToTopButtonVisible = false;
-      });
-    }
-  }
-  /// Unfocus the text field
-  void _unfocusTextField() {
-    FocusScope.of(context).unfocus();}
-  // Scroll to the top of the list when the button is pressed
-  void _scrollToTop() {
-    context.read<NewsBloc>().scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (_focusNode.hasFocus) {
-          _unfocusTextField();
-          return false;
-        }
-        return true;
-      },
-      child: GestureDetector(
-        onTap: () {
-          _unfocusTextField();
-          _focusNode.unfocus();
-        },
-        child: Scaffold(
-          key: _scaffoldKey,
-          resizeToAvoidBottomInset: false,
-          appBar: _buildAppBar(context),
-          drawer: _buildDrawer(context),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSearchBar(context),
-              if (context.read<NewsBloc>().recentSearches.isNotEmpty)
-                const Padding(
-                  padding: EdgeInsets.only(left: 12.0),
-                  child: Text(AppStrings.recentSearches,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              if (context.read<NewsBloc>().recentSearches.isNotEmpty)
-                _buildRecentSearchChips(context),
-              Expanded(child: _buildNewsList(context)),
-            ],
+    return BlocBuilder<NewsBloc, NewsState>(
+      builder: (context, state) {
+        return WillPopScope(
+          onWillPop: () async {
+            if (_focusNode.hasFocus) {
+              FocusScope.of(context).unfocus();
+              return false;
+            }
+            return true;
+          },
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Scaffold(
+              key: _scaffoldKey,
+              resizeToAvoidBottomInset: false,
+              appBar: _buildAppBar(context),
+              drawer: _buildDrawer(context),
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSearchBar(context, _focusNode),
+                  if (context.read<NewsBloc>().recentSearches.isNotEmpty) ...[
+                    _buildRecentSearchChips(context),
+                  ],
+                  Expanded(child: _buildNewsList(context)),
+                ],
+              ),
+              floatingActionButton: state is NewsLoaded &&
+                  context.read<NewsBloc>().isScrollToTopVisible
+                ? FloatingActionButton(
+                onPressed:  context.read<NewsBloc>().scrollToTop,
+                backgroundColor: AppColors.purple,
+                child: const Icon(Icons.arrow_upward),):null
+            ),
           ),
-          floatingActionButton: _isScrollToTopButtonVisible
-              ? FloatingActionButton(
-            onPressed: _scrollToTop,
-            backgroundColor: AppColors.purple,
-            child: const Icon(Icons.arrow_upward),
-          )
-              : null,
-        ),
-      ),
+        );
+      },
     );
   }
   AppBar _buildAppBar(BuildContext context) {
@@ -128,7 +74,7 @@ class _NewsPageState extends State<NewsPage> {
         icon: const Icon(Icons.menu_outlined, color:AppColors.black),
         onPressed: () {
           _scaffoldKey.currentState?.openDrawer();
-          _unfocusTextField();
+          _focusNode.unfocus();
         },
       ),
       centerTitle: true,
@@ -171,12 +117,12 @@ class _NewsPageState extends State<NewsPage> {
       title: Text(title),
       onTap: () {
         Navigator.pop(context);
-        _unfocusTextField();
+        _focusNode.unfocus();
       },
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
+  Widget _buildSearchBar(BuildContext context, FocusNode focusNode) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
@@ -195,7 +141,7 @@ class _NewsPageState extends State<NewsPage> {
                 }
               },
               onSubmitted: (value) {
-                _handleSearch(context, value.trim());
+                context.read<NewsBloc>().onAddRecentSearch(context, value.trim());
               },
               onTap: () {
                 _focusNode.requestFocus();
@@ -219,24 +165,12 @@ class _NewsPageState extends State<NewsPage> {
         icon: const Icon(Icons.search_rounded, color:AppColors.black),
         onPressed: () {
           final query = context.read<NewsBloc>().searchController.text.trim();
-          _handleSearch(context, query);
+          context.read<NewsBloc>().onAddRecentSearch(context, query);
         },
       ),
     );
   }
 
-  void _handleSearch(BuildContext context, String query) {
-    if (query.isNotEmpty) {
-      if (!context.read<NewsBloc>().recentSearches.contains(query)) {
-        context.read<NewsBloc>().recentSearches.insert(0, query);
-        if (context.read<NewsBloc>().recentSearches.length > 5) {
-          context.read<NewsBloc>().recentSearches.removeLast();
-        }
-      }
-      context.read<NewsBloc>().add(SearchNews(query: query));
-      _unfocusTextField();
-    }
-  }
 
   Widget _buildRecentSearchChips(BuildContext context) {
     return Padding(
@@ -245,11 +179,13 @@ class _NewsPageState extends State<NewsPage> {
         alignment: Alignment.centerLeft,
         child: Wrap(
           spacing: 8.0,
+          runSpacing: 4,
           children: context.read<NewsBloc>().recentSearches.map((query) {
             return GestureDetector(
               onTap: () {
                 context.read<NewsBloc>().searchController.text = query;
-                _handleSearch(context, query);
+                context.read<NewsBloc>().onAddRecentSearch(context, query);
+                _focusNode.unfocus();
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -304,7 +240,6 @@ class _NewsPageState extends State<NewsPage> {
                 article: article,
                 onTap: () {
                   _focusNode.unfocus();
-                  _unfocusTextField();
                   Navigator.push(
                     context,
                     MaterialPageRoute(

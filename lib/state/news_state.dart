@@ -15,23 +15,26 @@ class NewsLoaded extends NewsState {
   final List<NewsArticle> articles;
   final bool hasReachedMax;
   final List<String> recentSearches;
+  final bool showScrollToTop;
 
-  /// Constructor for NewsLoaded state
   NewsLoaded({
     required this.articles,
     required this.hasReachedMax,
     required this.recentSearches,
+    this.showScrollToTop = false,
   });
 
-  /// Creates a copy of the current state with optional modifications
   NewsLoaded copyWith({
     List<NewsArticle>? articles,
-    bool? hasReachedMax
+    bool? hasReachedMax,
+    List<String>? recentSearches,
+    bool? showScrollToTop,
   }) {
     return NewsLoaded(
       articles: articles ?? this.articles,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
-      recentSearches: this.recentSearches,
+      recentSearches: recentSearches ?? this.recentSearches,
+      showScrollToTop: showScrollToTop ?? this.showScrollToTop,
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:taza_khabar_app/models/news_article_model.dart';
-
+import 'package:equatable/equatable.dart';
 /// Represents the response from a news API
-class NewsResponse {
+class NewsResponse extends Equatable{
   final String status;
   final List<NewsArticle> articles;
 
@@ -21,4 +21,7 @@ class NewsResponse {
           .toList() ?? [],
     );
   }
+
+  @override
+  List<Object?> get props => [status,articles];
 }

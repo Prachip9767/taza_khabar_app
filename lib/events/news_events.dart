@@ -42,3 +42,8 @@ class SearchNews extends NewsEvent {
     this.category,
   });
 }
+
+class UpdateScrollToTopVisibility extends NewsEvent {
+  final bool isVisible;
+  UpdateScrollToTopVisibility(this.isVisible);
+}
