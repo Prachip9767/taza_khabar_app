@@ -26,15 +26,10 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          // Initialize NewsBloc with initial fetch event
-          BlocProvider(
-            create: (context) => NewsBloc(
-              context.read<NewsRepository>(),
-            )..add(FetchNews()),
-          ),
-        ],
+      child: BlocProvider(
+        create: (context) => NewsBloc(
+          context.read<NewsRepository>(),
+        )..add(FetchNews()),
         child: const App(),
       ),
     );

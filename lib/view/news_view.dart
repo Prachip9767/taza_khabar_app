@@ -11,13 +11,13 @@ import 'package:taza_khabar_app/widgets/news_item-widget.dart';
 
 /// Main news listing page with search and navigation functionality
 class NewsPage extends StatefulWidget {
-  NewsPage({super.key});
+  const NewsPage({super.key});
 
   @override
-  _NewsPageState createState() => _NewsPageState();
+  NewsPageState createState() => NewsPageState();
 }
 
-class _NewsPageState extends State<NewsPage> {
+class NewsPageState extends State<NewsPage> {
   /// Scaffold and focus management keys
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FocusNode _focusNode = FocusNode();
@@ -64,6 +64,8 @@ class _NewsPageState extends State<NewsPage> {
       },
     );
   }
+  
+  /// build app bar
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       title: const Text(
@@ -110,7 +112,8 @@ class _NewsPageState extends State<NewsPage> {
       ),
     );
   }
-
+  
+  /// build side drawer items
   Widget _buildDrawerItem(BuildContext context, IconData icon, String title) {
     return ListTile(
       leading: Icon(icon),
@@ -121,7 +124,8 @@ class _NewsPageState extends State<NewsPage> {
       },
     );
   }
-
+  
+  /// build search bar widget
   Widget _buildSearchBar(BuildContext context, FocusNode focusNode) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -141,7 +145,7 @@ class _NewsPageState extends State<NewsPage> {
                 }
               },
               onSubmitted: (value) {
-                context.read<NewsBloc>().onAddRecentSearch(context, value.trim());
+                context.read<NewsBloc>().add(AddRecentSearch(query: value));
               },
               onTap: () {
                 _focusNode.requestFocus();
@@ -154,7 +158,8 @@ class _NewsPageState extends State<NewsPage> {
       ),
     );
   }
-
+  
+  /// build search button
   Widget _buildSearchButton(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -165,13 +170,14 @@ class _NewsPageState extends State<NewsPage> {
         icon: const Icon(Icons.search_rounded, color:AppColors.black),
         onPressed: () {
           final query = context.read<NewsBloc>().searchController.text.trim();
-          context.read<NewsBloc>().onAddRecentSearch(context, query);
+          context.read<NewsBloc>().add(AddRecentSearch(query: query));
         },
       ),
     );
   }
 
 
+  /// build recent search chip widget
   Widget _buildRecentSearchChips(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -184,7 +190,7 @@ class _NewsPageState extends State<NewsPage> {
             return GestureDetector(
               onTap: () {
                 context.read<NewsBloc>().searchController.text = query;
-                context.read<NewsBloc>().onAddRecentSearch(context, query);
+                context.read<NewsBloc>().add(AddRecentSearch(query: query));
                 _focusNode.unfocus();
               },
               child: Container(
@@ -201,7 +207,8 @@ class _NewsPageState extends State<NewsPage> {
       ),
     );
   }
-
+  
+  /// build news list
   Widget _buildNewsList(BuildContext context) {
     return BlocBuilder<NewsBloc, NewsState>(
       builder: (context, state) {

@@ -20,12 +20,6 @@ class AddRecentSearch extends NewsEvent {
   AddRecentSearch({required this.query});
 }
 
-/// Event to remove a specific search query from the recent search history
-/// [query] is the search term to be removed from recent searches
-class RemoveRecentSearch extends NewsEvent {
-  final String query;
-  RemoveRecentSearch({required this.query});
-}
 
 /// Event for performing advanced news search with multiple filtering options
 /// Allows searching news with optional filters like query, language, author, and category

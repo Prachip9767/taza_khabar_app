@@ -35,6 +35,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   /// Current search query string entered by the user.
   String _currentSearchQuery = '';
 
+  /// scroll to top button visibility
   bool isScrollToTopVisible = false;
 
   /// Constructor to initialize the NewsBloc with the repository and set up event handlers.
@@ -43,6 +44,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<FetchNews>(_onFetchNews);
     on<LoadMoreNews>(_onLoadMoreNews);
     on<SearchNews>(_onSearchNews);
+    on<AddRecentSearch>(onAddRecentSearch);
     on<UpdateScrollToTopVisibility>((event, emit) {
       if (state is NewsLoaded) {
         emit((state as NewsLoaded).copyWith(showScrollToTop: event.isVisible));
@@ -183,18 +185,25 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   }
 
   /// Handles the AddRecentSearch event by adding a search query to the recent searches list.
-  void onAddRecentSearch(BuildContext context, String query) {
-    if (query.isEmpty) return;
+  Future<void> onAddRecentSearch(AddRecentSearch event,
+      Emitter<NewsState> emit)
+  async {
+    if (event.query.isEmpty) return;
 
-    if (!recentSearches.contains(query)) {
-      recentSearches.insert(0, query);
+    if (!recentSearches.contains(event.query)) {
+      recentSearches.insert(0, event.query);
       if (recentSearches.length > 5) recentSearches.removeLast();
     }
-    searchController.text = query;
-    add(SearchNews(query: query));
-    FocusScope.of(context).unfocus();
+    searchController.text = event.query;
+    add(SearchNews(query: event.query));
     scrollToTop();
+    emit(NewsLoaded(
+      recentSearches: recentSearches,
+      articles: _filteredArticles,
+      hasReachedMax: _filteredArticles.length < _pageSize,
+    ));
   }
+
 
   /// Disposes resources like controllers when the Bloc is closed.
   @override
